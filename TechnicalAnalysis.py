@@ -67,7 +67,9 @@ class TechnicalAnalysis:
         return (out, trdata)
     
     @classmethod
-    def atrBand(cls, atr, inp, k):
+    def atrBand(cls, dic, k):
+        atr = dic[ATR]
+        inp = dic[CLOSE]
         m =  MathArray.multiply(atr, k)
         upper = MathArray.addArray(inp, m)
         lower = MathArray.subtractArray(inp, m)
@@ -75,26 +77,32 @@ class TechnicalAnalysis:
     
 # -----
 def sequence(key: str, dic: dict, begin: int, end:int, params: dict):
+    n = len(dic[OPEN])
     if WINDOW in params.keys():
         window = params[WINDOW]
-        if begin < window:
-            d = dic
-        else:
-            d = sliceDic(dic, begin - window + 1, end)
     else:
-        n = len(dic[OPEN])
-        begin = n - 2
+        window = 0
+        
+    if not key in dic.keys():
+        data = dic
+        begin = 0
         end = n - 1
-        d = sliceDic(dic, begin, end)
-    
+    else:
+        if window > 0:
+            if begin < window:
+                data = dic
+            else:
+                data = sliceDic(dic, begin - window, end)
+        else:
+            data = sliceDic(dic, begin, end)
+        
     if key == SMA:
-        array = TechnicalAnalysis.sma(d[CLOSE], window)
+        array = TechnicalAnalysis.sma(data[CLOSE], window)
     elif key == ATR:
-        array, _ = TechnicalAnalysis.atr(d, window)
+        array, _ = TechnicalAnalysis.atr(data, window)
     elif key == ATR_BAND_UPPER or key == ATR_BAND_LOWER:
         k = params[COEFF]
-        atr = dic[ATR]
-        upper, lower = TechnicalAnalysis.atrBand(atr, d[CLOSE], k)
+        upper, lower = TechnicalAnalysis.atrBand(data, k)
         if key == ATR_BAND_UPPER:
             array = upper
         else:
@@ -121,5 +129,5 @@ def atr(key, dic, begin, end):
 
     
 def atrband(key, dic, begin, end):
-    params = {COEFF: 0.5}
+    params = {WINDOW:14, COEFF: 0.5}
     return sequence(key, dic, begin, end, params)

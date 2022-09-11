@@ -35,13 +35,18 @@ def dic2df(dic):
     keys = list(dic.keys())
     values = list(dic.values())
 
-    n = len(values)
-    length = len(values[0])
+    length = []
+    for value in values:
+        n = len(value)
+        length.append(n)
+    
+    if(min(length) != max(length)):
+        return None
     
     out = []
-    for i in range(length):
+    for i in range(n):
         d = []
-        for j in range(n):
+        for j in range(len(values)):
             d.append(values[j][i])
         out.append(d)
     df = pd.DataFrame(data=out, columns = keys)
@@ -88,6 +93,17 @@ def dic2Arrays(dic):
     for key in keys:
         arrays.append(dic[key])
     return keys, arrays
+
+def array2Dic(array, keys):
+    dic = {}
+    for key, i in enumerate(keys):
+        d = []
+        for a in array:
+            d.append(a[i])
+        dic[key] = d
+    return dic
+            
+        
 
 def sliceTime(pytime_array: list, time_from, time_to):
     begin = None

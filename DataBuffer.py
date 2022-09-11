@@ -55,6 +55,7 @@ class DataBuffer:
         self.dic = dic
         end = self.size() - 1
         self.calcFeatures(dic, 0, end)
+        print(dic.keys())
         return   
     
     def deleteLastData(self, dic):
@@ -64,8 +65,9 @@ class DataBuffer:
             out[key] = array[:-1]
         return out
     
-    def update(self, dic):
-        self.dic = self.deleteLastData(self.dic)
+    def update(self, dic, should_delete_last=True):
+        if should_delete_last:
+            self.dic = self.deleteLastData(self.dic)
         keys, arrays = dic2Arrays(self.dic)
         keys, newarrays = dic2Arrays(dic)        
         last_time = self.dic[TIMESTAMP][-1]
